@@ -42,14 +42,19 @@ export default {
   },
   methods: {
     fetchTodo() {
-      axios
-        .get(`https://dummyjson.com/todos/${this.$route.query.id}`)
-        .then((res) => {
-          this.item = res.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const token = localStorage.getItem("user");
+      if (token) {
+        axios
+          .get(`https://dummyjson.com/todos/${this.$route.query.id}`)
+          .then((res) => {
+            this.item = res.data;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        this.$router.push("/login");
+      }
     },
     toggleCompleted() {
       const formData = new FormData();

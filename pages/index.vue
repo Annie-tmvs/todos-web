@@ -9,7 +9,7 @@
     </div>
     <div class="pagination flex items-end justify-center my-10">
       <div>
-        <span>Current page: {{ this.$route.query.page }}</span>
+        <span>Current page: {{ currentPage }}</span>
       </div>
       <div class="w-fit m-auto flex gap-4">
         <a
@@ -45,26 +45,32 @@ export default {
   data() {
     return {
       todos: "",
-      skip: "", // Current page offset
+      skip: "",
+      currentPage: "",
     };
   },
   mounted() {
     setTimeout(() => {
       this.fetchTodo();
     }, 700);
+    this.pageNumber();
   },
   methods: {
     fetchTodo() {
       this.skip = parseInt(this.$route.query.skip) || 0;
-      axios
-        .get("https://dummyjson.com/todos?limit=30&skip=" + this.skip)
-        .then((res) => {
-          this.todos = res.data.todos;
-          // this.paginatedItems = this.todos.slice(
-          //   (this.currentPage - 1) * this.perPage,
-          //   this.currentPage * this.perPage
-          // );
-        });
+      const token = localStorage.getItem("user");
+      if (token) {
+        axios
+          .get("https://dummyjson.com/todos?limit=30&skip=" + this.skip)
+          .then((res) => {
+            this.todos = res.data.todos;
+          });
+      } else {
+        this.$router.push("/login");
+      }
+    },
+    pageNumber() {
+      this.currentPage = parseInt(this.$route.query.page) || 1;
     },
   },
 };
